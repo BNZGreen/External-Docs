@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "BNZ Green External API",
+    "title": "Financial Services API",
     "description": "API specification for user authentication and transaction management",
     "license": {
       "name": "MIT"
@@ -24,26 +24,46 @@
     "/user/auth": {
       "post": {
         "description": "Generates a redirect URL for seamless user authentication",
-        "security": [
+        "parameters": [
           {
-            "apiKeyAuth": [],
-            "apiSecretAuth": [],
-            "signatureAuth": []
+            "name": "x-api-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-api-secret",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-payload-signature",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
-          "required": true,
+          "description": "User authentication details",
           "content": {
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AuthRequest"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
-            "description": "Successfully generated redirect URL",
+            "description": "Authentication redirect URL",
             "content": {
               "application/json": {
                 "schema": {
@@ -53,17 +73,7 @@
             }
           },
           "400": {
-            "description": "Bad request - invalid input parameters",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
-              }
-            }
-          },
-          "401": {
-            "description": "Unauthorized - invalid API credentials or signature",
+            "description": "Unexpected error",
             "content": {
               "application/json": {
                 "schema": {
@@ -77,38 +87,21 @@
     },
     "/transactions/all": {
       "get": {
-        "description": "Retrieves all transactions for the authenticated user",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "Returns all transactions for the authenticated user",
         "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page number for pagination",
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1
-            }
-          },
           {
             "name": "limit",
             "in": "query",
-            "description": "Number of records per page",
+            "description": "The maximum number of results to return",
             "schema": {
               "type": "integer",
-              "minimum": 1,
-              "maximum": 100,
-              "default": 20
+              "format": "int32"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "List of transactions",
+            "description": "Transaction response",
             "content": {
               "application/json": {
                 "schema": {
@@ -120,8 +113,8 @@
               }
             }
           },
-          "401": {
-            "description": "Unauthorized",
+          "400": {
+            "description": "Unexpected error",
             "content": {
               "application/json": {
                 "schema": {
@@ -133,20 +126,15 @@
         }
       }
     },
-    "/transactions/{transactionId}": {
+    "/transactions/details/{id}": {
       "get": {
-        "description": "Retrieves detailed information about a specific transaction",
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
+        "description": "Returns details of a specific transaction",
         "parameters": [
           {
-            "name": "transactionId",
+            "name": "id",
             "in": "path",
+            "description": "ID of transaction to retrieve",
             "required": true,
-            "description": "Unique identifier of the transaction",
             "schema": {
               "type": "string"
             }
@@ -154,7 +142,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Detailed transaction information",
+            "description": "Transaction details response",
             "content": {
               "application/json": {
                 "schema": {
@@ -163,8 +151,8 @@
               }
             }
           },
-          "404": {
-            "description": "Transaction not found",
+          "400": {
+            "description": "Unexpected error",
             "content": {
               "application/json": {
                 "schema": {
@@ -180,8 +168,13 @@
   "components": {
     "schemas": {
       "AuthRequest": {
+        "required": [
+          "uniqueId",
+          "govtId", 
+          "name", 
+          "userType"
+        ],
         "type": "object",
-        "required": ["uniqueId", "govtId", "name", "userType"],
         "properties": {
           "uniqueId": {
             "type": "string",
@@ -198,7 +191,7 @@
           "userType": {
             "type": "string",
             "enum": ["company", "individual"],
-            "description": "Type of user - company or individual"
+            "description": "Type of user"
           }
         }
       },
@@ -224,18 +217,11 @@
           },
           "amount": {
             "type": "number",
-            "format": "float",
             "description": "Transaction amount"
           },
-          "timestamp": {
+          "tag": {
             "type": "string",
-            "format": "date-time",
-            "description": "Transaction timestamp"
-          },
-          "status": {
-            "type": "string",
-            "enum": ["pending", "completed", "failed"],
-            "description": "Transaction status"
+            "description": "Transaction tag or category"
           }
         }
       },
@@ -248,22 +234,25 @@
             "type": "object",
             "properties": {
               "description": {
-                "type": "string"
+                "type": "string",
+                "description": "Detailed description of the transaction"
               },
-              "metadata": {
-                "type": "object",
-                "additionalProperties": true,
-                "description": "Additional transaction metadata"
+              "timestamp": {
+                "type": "string",
+                "description": "Timestamp of the transaction"
               }
             }
           }
         ]
       },
       "Error": {
+        "required": [
+          "error",
+          "message"
+        ],
         "type": "object",
-        "required": ["code", "message"],
         "properties": {
-          "code": {
+          "error": {
             "type": "integer",
             "format": "int32"
           },
@@ -274,28 +263,9 @@
       }
     },
     "securitySchemes": {
-      "apiKeyAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-api-key",
-        "description": "API Key for authentication"
-      },
-      "apiSecretAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-api-secret",
-        "description": "API Secret for authentication"
-      },
-      "signatureAuth": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-payload-signature",
-        "description": "Request signature generated using API key"
-      },
       "bearerAuth": {
         "type": "http",
-        "scheme": "bearer",
-        "description": "JWT token for authenticated requests"
+        "scheme": "bearer"
       }
     }
   }
