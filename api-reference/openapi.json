@@ -133,7 +133,7 @@
         }
       }
     },
-    "/transactions/details/{transactionId}": {
+    "/transactions/{transactionId}": {
       "get": {
         "description": "Retrieves detailed information about a specific transaction",
         "security": [
