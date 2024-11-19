@@ -30,18 +30,10 @@
       "group": "Get Started",
       "pages": [
         "introduction",
-        "quickstart",
-        "development"
       ]
     },
     {
-      "group": "API Documentation",
-      "pages": [
-        "api-reference/introduction"
-      ]
-    },
-    {
-      "group": "Endpoint Examples",
+      "group": "API Endpoints",
       "pages": [
         "api-reference/endpoint/get",
         "api-reference/endpoint/create",
