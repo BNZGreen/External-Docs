@@ -35,9 +35,7 @@
     {
       "group": "API Endpoints",
       "pages": [
-        "api-reference/user/auth",
-        "api-reference/transactions/all",
-        "api-reference/transactions/details"
+        "api-reference/endpoints/auth"
       ]
     }
   ],
