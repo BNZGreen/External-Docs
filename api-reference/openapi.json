@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
+    "title": "BNZ Green External API",
+    "description": "API specification for user authentication and transaction management",
     "license": {
       "name": "MIT"
     },
@@ -15,40 +15,45 @@
   ],
   "security": [
     {
-      "bearerAuth": []
+      "apiKeyAuth": [],
+      "apiSecretAuth": [],
+      "signatureAuth": []
     }
   ],
   "paths": {
-    "/plants": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
+    "/user/auth": {
+      "post": {
+        "description": "Generates a redirect URL for seamless user authentication",
+        "security": [
           {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
+            "apiKeyAuth": [],
+            "apiSecretAuth": [],
+            "signatureAuth": []
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRequest"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "Successfully generated redirect URL",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
+                  "$ref": "#/components/schemas/AuthResponse"
                 }
               }
             }
           },
           "400": {
-            "description": "Unexpected error",
+            "description": "Bad request - invalid input parameters",
             "content": {
               "application/json": {
                 "schema": {
@@ -56,35 +61,9 @@
                 }
               }
             }
-          }
-        }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
-            }
           },
-          "required": true
-        },
-        "responses": {
-          "200": {
-            "description": "plant response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Plant"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "unexpected error",
+          "401": {
+            "description": "Unauthorized - invalid API credentials or signature",
             "content": {
               "application/json": {
                 "schema": {
@@ -96,28 +75,96 @@
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/transactions/all": {
+      "get": {
+        "description": "Retrieves all transactions for the authenticated user",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
+            "name": "page",
+            "in": "query",
+            "description": "Page number for pagination",
             "schema": {
               "type": "integer",
-              "format": "int64"
+              "minimum": 1,
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Number of records per page",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
+          "200": {
+            "description": "List of transactions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Transaction"
+                  }
+                }
+              }
+            }
           },
-          "400": {
-            "description": "unexpected error",
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/transactions/details/{transactionId}": {
+      "get": {
+        "description": "Retrieves detailed information about a specific transaction",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "transactionId",
+            "in": "path",
+            "required": true,
+            "description": "Unique identifier of the transaction",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Detailed transaction information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDetail"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Transaction not found",
             "content": {
               "application/json": {
                 "schema": {
@@ -132,50 +179,91 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "AuthRequest": {
         "type": "object",
+        "required": ["uniqueId", "govtId", "name", "userType"],
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+          "uniqueId": {
+            "type": "string",
+            "description": "Unique identifier for the user"
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
+          "govtId": {
+            "type": "string",
+            "description": "Government ID (Aadhar, CIN)"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's full name"
+          },
+          "userType": {
+            "type": "string",
+            "enum": ["company", "individual"],
+            "description": "Type of user - company or individual"
           }
         }
       },
-      "NewPlant": {
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "redirectUrl": {
+            "type": "string",
+            "description": "URL to redirect the user for authentication"
+          },
+          "expiresIn": {
+            "type": "integer",
+            "description": "Time in seconds until the redirect URL expires"
+          }
+        }
+      },
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Transaction ID"
+          },
+          "amount": {
+            "type": "number",
+            "format": "float",
+            "description": "Transaction amount"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Transaction timestamp"
+          },
+          "status": {
+            "type": "string",
+            "enum": ["pending", "completed", "failed"],
+            "description": "Transaction status"
+          }
+        }
+      },
+      "TransactionDetail": {
         "allOf": [
           {
-            "$ref": "#/components/schemas/Plant"
+            "$ref": "#/components/schemas/Transaction"
           },
           {
-            "required": [
-              "id"
-            ],
             "type": "object",
             "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
+              "description": {
+                "type": "string"
+              },
+              "metadata": {
+                "type": "object",
+                "additionalProperties": true,
+                "description": "Additional transaction metadata"
               }
             }
           }
         ]
       },
       "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
         "type": "object",
+        "required": ["code", "message"],
         "properties": {
-          "error": {
+          "code": {
             "type": "integer",
             "format": "int32"
           },
@@ -186,9 +274,28 @@
       }
     },
     "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key",
+        "description": "API Key for authentication"
+      },
+      "apiSecretAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-secret",
+        "description": "API Secret for authentication"
+      },
+      "signatureAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-payload-signature",
+        "description": "Request signature generated using API key"
+      },
       "bearerAuth": {
         "type": "http",
-        "scheme": "bearer"
+        "scheme": "bearer",
+        "description": "JWT token for authenticated requests"
       }
     }
   }
