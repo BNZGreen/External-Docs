@@ -1,8 +1,8 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
+    "title": "Financial Services API",
+    "description": "API specification for user authentication and transaction management",
     "license": {
       "name": "MIT"
     },
@@ -10,39 +10,67 @@
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "https://api.sandbox.external.bnznow.com"
     }
   ],
   "security": [
     {
-      "bearerAuth": []
+      "apiKeyAuth": [],
+      "apiSecretAuth": [],
+      "signatureAuth": []
     }
   ],
   "paths": {
-    "/auth": {
-      "get": {
-        "description": "Returns all plants from the system that the user has access to",
+    "/user/auth": {
+      "post": {
+        "description": "Generates a redirect URL for seamless user authentication",
         "parameters": [
           {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
+            "name": "x-api-key",
+            "in": "header",
+            "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
+              "type": "string"
+            },
+            "description": "API key for authentication. This is a public key that can be used to authenticate the request."
+          },
+          {
+            "name": "x-api-secret",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "API secret for authentication. This is a private key that can be used to sign the request."
+          },
+          {
+            "name": "x-payload-signature",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Signature of the request payload. This is a hash of the request payload that can be used to verify the request."
           }
         ],
+        "requestBody": {
+          "description": "User authentication details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "Authentication redirect URL",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
+                  "$ref": "#/components/schemas/AuthResponse"
                 }
               }
             }
@@ -58,33 +86,69 @@
             }
           }
         }
-      },
-      "post": {
-        "description": "Creates a new plant in the store",
-        "requestBody": {
-          "description": "Plant to add to the store",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/NewPlant"
-              }
+      }
+    },
+    "/transactions": {
+      "get": {
+        "description": "Returns all transactions for all users on the platform registered with your API key",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query", 
+            "description": "The maximum number of results to return",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20
             }
           },
-          "required": true
-        },
+          {
+            "name": "page",
+            "in": "query",
+            "description": "The page number to return",
+            "schema": {
+              "type": "integer", 
+              "format": "int32",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 1
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "description": "The sort order of the results",
+            "schema": {
+              "type": "string", 
+              "enum": ["asc", "desc"],
+              "default": "desc"
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "description": "The type of transactions to return",
+            "schema": {
+              "type": "string", 
+              "enum": ["buy", "offset"]
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "plant response",
+            "description": "Transaction response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                      "$ref": "#/components/schemas/Transaction"
                 }
               }
             }
           },
           "400": {
-            "description": "unexpected error",
+            "description": "Unexpected error",
             "content": {
               "application/json": {
                 "schema": {
@@ -96,28 +160,33 @@
         }
       }
     },
-    "/transactions": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/transactions/{id}": {
+      "get": {
+        "description": "Returns details of a specific transaction",
         "parameters": [
           {
             "name": "id",
             "in": "path",
-            "description": "ID of plant to delete",
+            "description": "ID of transaction to retrieve",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string"
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
+          "200": {
+            "description": "Transaction details response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransactionDetail"
+                }
+              }
+            }
           },
           "400": {
-            "description": "unexpected error",
+            "description": "Unexpected error",
             "content": {
               "application/json": {
                 "schema": {
@@ -132,37 +201,124 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
+      "AuthRequest": {
         "required": [
-          "name"
+          "unique_id",
+          "govt_id", 
+          "user_type"
         ],
         "type": "object",
         "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+          "unique_id": {
+            "type": "string",
+            "description": "Unique identifier for the user in your system (user_id, company_id, etc)"
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
+          "govt_id": {
+            "type": "string",
+            "description": "Government ID (Aadhar, CIN)"
+          },
+          "name": {
+            "type": "string",
+            "description": "User's full name"
+          },
+          "user_type": {
+            "type": "string",
+            "enum": ["company", "individual"],
+            "description": "Type of user"
           }
         }
       },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
+      "AuthResponse": {
+        "type": "object",
+        "properties": {
+          "redirect_url": {
+            "type": "string",
+            "description": "URL to redirect the user for authentication"
           },
-          {
-            "required": [
-              "id"
-            ],
+          "registered_id": {
+            "type": "string",
+            "description": "Registered ID of the user on BNZ Green. You should store this value in your database and use it to identify the user in the transactions API."
+          },
+          "expires_in": {
+            "type": "integer",
+            "description": "Time in seconds until the redirect URL expires"
+          }
+        }
+      },
+      "Transaction": {
+        "type": "object",
+        "properties": {
+          "metadata": {
             "type": "object",
             "properties": {
-              "id": {
-                "description": "Identification number of the plant",
+              "current_page": {
                 "type": "integer",
-                "format": "int64"
+                "description": "Current page number"
+              },
+              "total_records": {
+                "type": "integer", 
+                "description": "Total number of records"
+              },
+              "limit": {
+                "type": "integer",
+                "description": "Number of records per page"
+              }
+            }
+          },
+          "overview": {
+            "type": "object",
+            "properties": {
+              "total_transactions": {
+                "type": "integer",
+                "description": "Total number of transactions"
+              },
+              "total_offsetted": {
+                "type": "integer",
+                "description": "Total number of offset transactions"
+              },
+              "total_users": {
+                "type": "integer",
+                "description": "Total number of users"
+              }
+            }
+          },
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Transaction ID"
+                },
+                "amount": {
+                  "type": "number",
+                  "description": "Transaction amount"
+                },
+                "tag": {
+                  "type": "string",
+                  "description": "Transaction tag or category"
+                }
+              }
+            }
+          }
+        }
+      },
+      "TransactionDetail": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Transaction"
+          },
+          {
+            "type": "object",
+            "properties": {
+              "description": {
+                "type": "string",
+                "description": "Detailed description of the transaction"
+              },
+              "timestamp": {
+                "type": "string",
+                "description": "Timestamp of the transaction"
               }
             }
           }
