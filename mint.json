@@ -18,7 +18,7 @@
   "topbarLinks": [
     {
       "name": "Support",
-      "url": "mailto:support@bnzgreen.io"
+      "url": "https://bnzgreen.io/contact"
     }
   ],
   "topbarCtaButton": {
@@ -38,6 +38,7 @@
         {
           "group": "Marketplace",
           "pages": [
+            "api-reference/marketplace/status",
             "api-reference/marketplace/auth",
             "api-reference/marketplace/transactions",
             "api-reference/marketplace/transactions-details"

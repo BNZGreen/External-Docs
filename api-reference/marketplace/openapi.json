@@ -16,6 +16,23 @@
     }
   ],
   "paths": {
+    "/health": {
+      "get": {
+        "description": "Check the status of the API",
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/user/auth": {
       "post": {
         "description": "Generates a redirect URL for seamless user authentication",
@@ -215,6 +232,15 @@
   },
   "components": {
     "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "cpu": {
+            "type": "number",
+            "description": "CPU usage of the API"
+          }
+        }
+      },
       "AuthRequest": {
         "required": [
           "unique_id",
