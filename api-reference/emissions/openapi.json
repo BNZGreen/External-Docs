@@ -1,0 +1,208 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Emissions Calculation API",
+    "description": "API specification for calculating emissions from various sources",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://external.emissions.bnzgreen.io",
+      "description": "Emissions calculation service"
+    }
+  ],
+  "paths": {
+    "/api/calculate": {
+      "post": {
+        "tags": ["Emissions"],
+        "summary": "Calculate Flight Emissions",
+        "description": "Calculate CO2 emissions for a flight journey",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "API key for authentication"
+          },
+          {
+            "name": "x-body-signature",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Signature of the request body signed with API secret (private key)"
+          },
+          {
+            "name": "x-platform-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Unique identifier for the platform making the request"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FlightEmissionsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Flight emissions calculation successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FlightEmissionsResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DepartureDate": {
+        "type": "object",
+        "required": ["year", "month", "day"],
+        "properties": {
+          "year": {
+            "type": "integer",
+            "description": "Year of departure"
+          },
+          "month": {
+            "type": "integer",
+            "description": "Month of departure (1-12)"
+          },
+          "day": {
+            "type": "integer",
+            "description": "Day of departure (1-31)"
+          }
+        }
+      },
+      "FlightDetails": {
+        "type": "object",
+        "required": [
+          "origin",
+          "destination",
+          "operatingCarrierCode",
+          "flightNumber",
+          "departureDate"
+        ],
+        "properties": {
+          "origin": {
+            "type": "string",
+            "description": "IATA code of origin airport"
+          },
+          "destination": {
+            "type": "string",
+            "description": "IATA code of destination airport"
+          },
+          "operatingCarrierCode": {
+            "type": "string",
+            "description": "IATA code of operating carrier"
+          },
+          "flightNumber": {
+            "type": "integer",
+            "description": "Flight number"
+          },
+          "departureDate": {
+            "$ref": "#/components/schemas/DepartureDate"
+          }
+        }
+      },
+      "FlightEmissionsRequest": {
+        "type": "object",
+        "required": ["flights"],
+        "properties": {
+          "flights": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FlightDetails"
+            },
+            "description": "List of flights to calculate emissions for"
+          }
+        }
+      },
+      "EmissionsPerClass": {
+        "type": "object",
+        "properties": {
+          "first": {
+            "type": "integer",
+            "description": "Emissions in grams per passenger for first class"
+          },
+          "business": {
+            "type": "integer",
+            "description": "Emissions in grams per passenger for business class"
+          },
+          "premiumEconomy": {
+            "type": "integer",
+            "description": "Emissions in grams per passenger for premium economy class"
+          },
+          "economy": {
+            "type": "integer",
+            "description": "Emissions in grams per passenger for economy class"
+          }
+        }
+      },
+      "FlightEmissionsResponse": {
+        "type": "object",
+        "properties": {
+          "flight": {
+            "$ref": "#/components/schemas/FlightDetails"
+          },
+          "emissionsGramsPerPax": {
+            "$ref": "#/components/schemas/EmissionsPerClass"
+          }
+        }
+      },
+      "Error": {
+        "required": [
+          "error",
+          "message"
+        ],
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "apiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-api-key"
+      }
+    }
+  }
+} 
