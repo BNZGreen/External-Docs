@@ -9,6 +9,10 @@
     {
       "url": "https://external.emissions.bnzgreen.io",
       "description": "Emissions calculation service"
+    },
+    {
+      "url": "https://sandbox.external.emissions.bnzgreen.io",
+      "description": "Sandbox emissions calculation service"
     }
   ],
   "paths": {

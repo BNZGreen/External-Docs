@@ -7,8 +7,12 @@
   },
   "servers": [
     {
+      "url": "https://api.sandbox.offset.bnzgreen.io",
+      "description": "Sandbox server for offset gateway"
+    },
+    {
       "url": "https://api.offset.bnzgreen.io",
-      "description": "Offset gateway service"
+      "description": "Production server for offset gateway"
     }
   ],
   "paths": {

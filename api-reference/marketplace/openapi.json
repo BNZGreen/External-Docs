@@ -9,6 +9,10 @@
     {
       "url": "https://api.sandbox.external.bnznow.com",
       "description": "Sandbox server for marketplace APIs"
+    },
+    {
+      "url": "https://api.external.bnznow.com",
+      "description": "Production server for marketplace APIs"
     }
   ],
   "paths": {
@@ -215,13 +219,18 @@
         "required": [
           "unique_id",
           "govt_id",
-          "user_type"
+          "user_type",
+          "email"
         ],
         "type": "object",
         "properties": {
           "unique_id": {
             "type": "string",
             "description": "Unique identifier for the user in your system (user_id, company_id, etc)"
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address of the user"
           },
           "govt_id": {
             "type": "string",
