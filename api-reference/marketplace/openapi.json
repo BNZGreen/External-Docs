@@ -235,9 +235,15 @@
       "HealthResponse": {
         "type": "object",
         "properties": {
-          "cpu": {
-            "type": "number",
-            "description": "CPU usage of the API"
+          "status": {
+            "type": "string",
+            "description": "Status of the API",
+            "enum": ["ok"]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time", 
+            "description": "Current timestamp in ISO 8601 format"
           }
         }
       },
