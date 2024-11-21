@@ -16,7 +16,7 @@
     }
   ],
   "paths": {
-    "/health": {
+    "/status": {
       "get": {
         "description": "Check the status of the API",
         "responses": {
