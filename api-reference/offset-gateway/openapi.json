@@ -73,6 +73,132 @@
             }
           }
         }
+      },
+      "get": {
+        "tags": ["Offset"],
+        "summary": "List All Offset Orders",
+        "description": "Retrieve a list of all offset orders with optional filtering and pagination",
+        "parameters": [
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "API key for authentication"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1
+            },
+            "description": "Page number for paginated results"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100,
+              "default": 10
+            },
+            "description": "Number of orders per page"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "pending",
+                "in_progress",
+                "completed",
+                "failed",
+                "cancelled"
+              ]
+            },
+            "description": "Filter orders by their current status"
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Filter orders by user email"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved list of orders",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "metadata": {
+                      "current_page": {
+                        "type": "integer",
+                        "description": "Current page number of the results"
+                      },
+                      "total_records": {
+                        "type": "integer",
+                        "description": "Total number of records across all pages"
+                      },
+                      "limit": {
+                        "type": "integer",
+                        "description": "Number of records per page"
+                      },
+                      "total_pages": {
+                        "type": "integer",
+                        "description": "Total number of pages"
+                      }
+                    },
+                    "overview": {
+                      "total_transactions": {
+                        "type": "integer",
+                        "description": "Total number of offset orders"
+                      },
+                      "total_offsetted": {
+                        "type": "number",
+                        "description": "Total amount of carbon emissions offset"
+                      },
+                      "total_users": {
+                        "type": "integer",
+                        "description": "Total number of unique users"
+                      }
+                    },
+                    "orders": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/OrderDetails"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request - Invalid query parameters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/orders/create-order": {

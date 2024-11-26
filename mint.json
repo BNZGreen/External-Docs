@@ -28,9 +28,7 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": [
-        "introduction"
-      ]
+      "pages": ["introduction"]
     },
     {
       "group": "API Reference",
@@ -46,16 +44,15 @@
         },
         {
           "group": "Emissions Service",
-          "pages": [
-            "api-reference/emissions/flight-emissions"
-          ]
+          "pages": ["api-reference/emissions/flight-emissions"]
         },
         {
           "group": "Offset Gateway",
           "pages": [
             "api-reference/offset-gateway/create-order",
             "api-reference/offset-gateway/get-order-details",
-            "api-reference/offset-gateway/get-order-status"
+            "api-reference/offset-gateway/get-order-status",
+            "api-reference/offset-gateway/get-orders"
           ]
         }
       ]
