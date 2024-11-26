@@ -349,7 +349,7 @@
       },
       "OrderDetails": {
           "properties": {
-            "id": {
+            "order_id": {
               "type": "string"
             },
             "user": {
