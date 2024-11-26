@@ -7,12 +7,12 @@
   },
   "servers": [
     {
-      "url": "https://api.sandbox.offset.bnzgreen.io",
-      "description": "Sandbox server for offset gateway"
+      "url": "https://api.sandbox.external.bnznow.com",
+      "description": "Sandbox server for marketplace APIs"
     },
     {
-      "url": "https://api.offset.bnzgreen.io",
-      "description": "Production server for offset gateway"
+      "url": "https://api.external.bnznow.com",
+      "description": "Production server for marketplace APIs"
     }
   ],
   "paths": {
@@ -89,7 +89,7 @@
               "type": "string"
             },
             "description": "Signature for request verification"
-          } , 
+          },
           {
             "name": "x-api-key",
             "in": "header",
@@ -115,11 +115,12 @@
                   "emission_unit": {
                     "type": "string",
                     "description": "Unit of emission measurement",
-                    "nullable": true
+                    "default": "kg"
                   },
                   "is_user_beneficiary": {
                     "type": "boolean",
-                    "description": "Indicates if the user is the beneficiary"
+                    "description": "Indicates if the user is the beneficiary",
+                    "default": false
                   },
                   "tax_id": {
                     "type": "string",
