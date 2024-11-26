@@ -348,57 +348,61 @@
         }
       },
       "OrderDetails": {
-          "properties": {
-            "order_id": {
-              "type": "string"
-            },
-            "user": {
-              "type": "object",
-              "properties": {
-                "name": {
-                  "type": "string"
-                },
-                "email": {
-                  "type": "string"
-                },
-                "phone": {
-                  "type": "string"
-                }
+        "properties": {
+          "order_id": {
+            "type": "string"
+          },
+          "user": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string"
+              },
+              "phone": {
+                "type": "string"
               }
-            },
-            "notes": {
-              "type": "array"
-            },
-            "emission_unit": {
-              "type": "string",
-              "default": "kg"
-            },
-            "emission_amount": {
-              "type": "number"
-            },
-            "status": {
-              "type": "string",
-              "enum": ["pending", "in_progress", "completed", "failed"],
-              "default": "pending"
-            },
-            "payment_status": {
-              "type": "string",
-              "enum": [
-                "pending",
-                "in_progress",
-                "completed",
-                "failed",
-                "refunded",
-                "cancelled",
-                "failed_refund"
-              ],
-              "default": "pending"
-            },
-            "created_at": {
-              "type": "string",
-              "format": "date-time"
             }
+          },
+          "notes": {
+            "type": "array"
+          },
+          "emission_unit": {
+            "type": "string",
+            "default": "kg"
+          },
+          "emission_amount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "in_progress",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
+            "default": "pending"
+          },
+          "payment_status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "in_progress",
+              "completed",
+              "failed",
+              "refunded"
+            ],
+            "default": "pending"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time"
           }
+        }
       },
       "GetOrderByIdRequestParams": {
         "type": "object",
@@ -454,7 +458,13 @@
           },
           "status": {
             "type": "string",
-            "enum": ["pending", "processing", "completed", "failed"],
+            "enum": [
+              "pending",
+              "processing",
+              "completed",
+              "failed",
+              "cancelled"
+            ],
             "description": "Current status of the order"
           },
           "created_at": {
