@@ -178,16 +178,46 @@
     "schemas": {
       "CreateOrderRequest": {
         "type": "object",
-        "required": ["carbon_credits", "payment_method"],
+        "required": ["emission_amount", "emission_unit"],
         "properties": {
-          "carbon_credits": {
+          "emission_amount": {
             "type": "number",
-            "description": "Amount of carbon credits to purchase in tonCO2e"
+            "description": "Amount of carbon credits to purchase in tonCO2e",
+            "minimum": 0
+          },
+          "emission_unit": {
+            "type": "string",
+            "description": "Unit of measurement for emissions",
+            "enum": ["kg", "ton", "tonCO2e"],
+            "default": "tonCO2e"
           },
           "payment_method": {
             "type": "string",
-            "enum": ["upi", "card", "netbanking"],
-            "description": "Payment method for the order"
+            "description": "Payment method for the order",
+            "enum": ["upi", "card", "netbanking"]
+          },
+          "is_user_beneficiary": {
+            "type": "boolean",
+            "description": "Indicates if the user is the direct beneficiary of the offset"
+          },
+          "tax_id": {
+            "type": "string",
+            "description": "Tax identifier for the order"
+          },
+          "user": {
+            "type": "object",
+            "description": "User information",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Full name of the user"
+              },
+              "email": {
+                "type": "string",
+                "format": "email",
+                "description": "Email address of the user"
+              }
+            }
           }
         }
       },
@@ -205,6 +235,11 @@
           "payment_url": {
             "type": "string",
             "description": "URL to complete payment"
+          },
+          "expiry_time": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Expiration time for the payment session"
           }
         }
       },
@@ -235,30 +270,55 @@
           }
         }
       },
+      "GetOrderByIdRequestParams": {
+        "type": "object",
+        "required": ["id"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier of the order to retrieve"
+          }
+        }
+      },
+      "GetOrderByIdRequestHeaders": {
+        "type": "object",
+        "required": ["x-api-key"],
+        "properties": {
+          "x-api-key": {
+            "type": "string",
+            "description": "API key for authentication"
+          }
+        }
+      },
+      "GetOrderByIdResponse": {
+        "type": "object",
+        "properties": {
+          "order": {
+            "$ref": "#/components/schemas/OrderDetails"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Error message describing the issue"
+          }
+        }
+      },
       "OrderStatus": {
         "type": "object",
         "properties": {
-          "order_id": {
-            "type": "string",
-            "description": "Unique identifier for the order"
-          },
           "status": {
             "type": "string",
             "enum": ["pending", "processing", "completed", "failed"],
             "description": "Current status of the order"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time",
-            "description": "Last status update timestamp"
           }
         }
       },
       "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
+        "required": ["error", "message"],
         "type": "object",
         "properties": {
           "error": {
@@ -279,4 +339,4 @@
       }
     }
   }
-} 
+}
