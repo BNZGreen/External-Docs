@@ -75,6 +75,109 @@
         }
       }
     },
+    "/orders/create-order": {
+      "post": {
+        "tags": ["Offset"],
+        "summary": "Create a New Offset Order",
+        "description": "Create a new offset order with detailed emission and user information",
+        "parameters": [
+          {
+            "name": "x-body-signature",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Signature for request verification"
+          } , 
+          {
+            "name": "x-api-key",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "API key of Client"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["emission_amount"],
+                "properties": {
+                  "emission_amount": {
+                    "type": "number",
+                    "description": "Amount of emissions to offset"
+                  },
+                  "emission_unit": {
+                    "type": "string",
+                    "description": "Unit of emission measurement",
+                    "nullable": true
+                  },
+                  "is_user_beneficiary": {
+                    "type": "boolean",
+                    "description": "Indicates if the user is the beneficiary"
+                  },
+                  "tax_id": {
+                    "type": "string",
+                    "description": "Tax ID for the order",
+                    "nullable": true
+                  },
+                  "user": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "description": "Name of the user"
+                      },
+                      "email": {
+                        "type": "string",
+                        "description": "Email of the user"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Order created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "url": {
+                      "type": "string",
+                      "description": "Redirect URL for payment gateway"
+                    },
+                    "order_id": {
+                      "type": "string",
+                      "description": "Unique identifier for the created order"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/orders/{id}": {
       "get": {
         "tags": ["Offset"],
