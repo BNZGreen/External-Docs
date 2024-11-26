@@ -13,7 +13,7 @@
     {
       "url": "https://api.external.bnznow.com",
       "description": "Production server for marketplace APIs"
-    }
+    } 
   ],
   "paths": {
     "/orders": {
@@ -354,13 +354,13 @@
             "type": "string",
             "description": "Unique identifier for the order"
           },
-          "carbon_credits": {
+          "emission_amount": {
             "type": "number",
-            "description": "Amount of carbon credits purchased"
+            "description": "Amount of user emissions"
           },
-          "amount": {
-            "type": "number",
-            "description": "Total amount in INR"
+          "emission_unit": {
+            "type": "string",
+            "description": "unit of emissions"
           },
           "status": {
             "type": "string",
