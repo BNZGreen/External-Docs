@@ -28,17 +28,15 @@
   "navigation": [
     {
       "group": "Get Started",
-      "pages": [
-        "introduction"
-      ]
+      "pages": ["introduction"]
     },
     {
       "group": "API Reference",
       "pages": [
+        "api-reference/status",
         {
           "group": "Marketplace",
           "pages": [
-            "api-reference/marketplace/status",
             "api-reference/marketplace/auth",
             "api-reference/marketplace/transactions",
             "api-reference/marketplace/transactions-details"
@@ -46,16 +44,15 @@
         },
         {
           "group": "Emissions Service",
-          "pages": [
-            "api-reference/emissions/flight-emissions"
-          ]
+          "pages": ["api-reference/emissions/flight-emissions"]
         },
         {
           "group": "Offset Gateway",
           "pages": [
             "api-reference/offset-gateway/create-order",
             "api-reference/offset-gateway/get-order-details",
-            "api-reference/offset-gateway/get-order-status"
+            "api-reference/offset-gateway/get-order-status",
+            "api-reference/offset-gateway/get-orders"
           ]
         }
       ]

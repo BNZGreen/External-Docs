@@ -1,0 +1,59 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Status API",
+    "description": "Common status endpoint for checking API health",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://api.sandbox.external.bnznow.com",
+      "description": "Sandbox server"
+    },
+    {
+      "url": "https://api.external.bnznow.com",
+      "description": "Production server"
+    }
+  ],
+  "paths": {
+    "/status": {
+      "get": {
+        "summary": "Check API Status",
+        "description": "Check the health status of the API",
+        "operationId": "getStatus",
+        "tags": ["Status"],
+        "responses": {
+          "200": {
+            "description": "API is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Status of the API",
+            "enum": ["ok"]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Current timestamp in ISO 8601 format"
+          }
+        }
+      }
+    }
+  }
+} 
