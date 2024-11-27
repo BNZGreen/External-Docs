@@ -33,10 +33,10 @@
     {
       "group": "API Reference",
       "pages": [
+        "api-reference/status",
         {
           "group": "Marketplace",
           "pages": [
-            "api-reference/marketplace/status",
             "api-reference/marketplace/auth",
             "api-reference/marketplace/transactions",
             "api-reference/marketplace/transactions-details"
