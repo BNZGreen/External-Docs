@@ -466,6 +466,11 @@
             "format": "uri",
             "description": "URL to receive webhook notifications about order status changes"
           },
+          "payment_url": {
+            "type": "string",
+            "format": "uri",
+            "description": "URL to complete the payment"
+          },
           "status": {
             "type": "string",
             "enum": ["pending", "completed", "failed"],
