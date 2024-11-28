@@ -16,7 +16,7 @@
     }
   ],
   "paths": {
-    "marketplace/user/auth": {
+    "/marketplace/user/auth": {
       "post": {
         "description": "Generates a redirect URL for seamless user authentication",
         "parameters": [
@@ -74,7 +74,7 @@
         }
       }
     },
-    "marketplace/transactions": {
+    "/marketplace/transactions": {
       "get": {
         "description": "Returns all transactions for all users on the platform registered with your API key",
         "parameters": [
@@ -163,7 +163,7 @@
         }
       }
     },
-    "marketplace/transactions/{id}": {
+    "/marketplace/transactions/{id}": {
       "get": {
         "tags": ["Transactions"],
         "summary": "Get Transaction Details",
